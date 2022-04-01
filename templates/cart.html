@@ -1,0 +1,9 @@
+{% extends "layout.html" %}
+{% block title %}Shop{% endblock %}
+{% block body %}
+  <h2>Cart</h2>
+  {% if error %}<div class="error"><strong>Error:</strong> {{ error }}</div>{% endif %}
+  {% for item in items %}
+      {{ item }}
+  {% endfor %}
+{% endblock %}

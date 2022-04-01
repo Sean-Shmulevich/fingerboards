@@ -1,0 +1,14 @@
+{% extends "layout.html" %}
+{% block title %}Shop{% endblock %}
+{% block body %}
+  <h2>{{item.item_name}}</h2>
+  {% if error %}<div class="error"><strong>Error:</strong> {{ error }}</div>{% endif %}
+  <form>
+      <input id="addCart" type="submit" value="add to Cart">
+  </form>
+  <a href="{{ url_for('fetchItem',item_id=item.item_id) }}">
+      {{ item.item_id }}
+      {{ item.item_name }}
+      {{ item.item_price }}
+      </a>
+{% endblock %}

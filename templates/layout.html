@@ -1,0 +1,35 @@
+<!doctype html>
+<title>{% block title %}Welcome{% endblock %} | Fingerboards</title>
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+<script type="text/javascript" src="{{ url_for('static', filename='script.js') }}"></script>
+<div class="page">
+  <h1>Fingerboards</h1>
+  <div class="navigation">
+    {% if g.user %}
+      <a href="{{ url_for('homepage') }}">Homepage</a> |
+      <a href="{{ url_for('shop') }}">Shop</a> |
+      <a href="{{ url_for('cart') }}">Cart</a> |
+      <a href="{{ url_for('logout') }}">sign out [{{ g.user.username }}]</a>
+    {% else %}
+      <a href="{{ url_for('homepage') }}">Homepage</a> |
+      <a href="{{ url_for('shop') }}">Shop</a> |
+      <a href="{{ url_for('cart') }}">Cart</a> |
+      <a href="{{ url_for('login') }}">login</a>
+    {% endif %}
+  </div>
+  {% with flashes = get_flashed_messages() %}
+    {% if flashes %}
+      <ul class="flashes">
+      {% for message in flashes %}
+        <li>{{ message }}
+      {% endfor %}
+      </ul>
+    {% endif %}
+  {% endwith %}
+  <div class="body">
+  {% block body %}{% endblock %}
+  </div>
+  <div class="footer">
+    Fingerboards &mdash; A Flask Application
+  </div>
+</div>

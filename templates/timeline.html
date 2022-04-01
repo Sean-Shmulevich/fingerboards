@@ -1,0 +1,33 @@
+{% extends "layout.html" %}
+{% block title %}
+  {% if request.endpoint == 'public_timeline' %}
+    Public Events
+  {% else %}
+    My Scheduled Events
+  {% endif %}
+{% endblock %}
+{% block body %}
+  <h2>{{ self.title() }}</h2>
+  {% if g.user %}
+    {% if request.endpoint == 'timeline' and not g.user.employee %}
+      <div class="twitbox">
+        <h3>Create an Event {{ g.user.username }}?</h3>
+        <form action="{{ url_for('add_event') }}" method="post">
+          <p><input type="text" name="text" size="60">
+            <input type="date" id="start" name="Event_day" value="2022-03-22" min="2022-03-22" max="2030-03-22">
+            <input type="submit" value="Enter event details into textbox">
+        </form>
+      </div>
+    {% endif %}
+  {% endif %}
+  <ul class="messages">
+  {% for message in messages %}
+    <li>
+      <strong><a href="{{ url_for('eventScheduled', date=message.pub_date) }}">{{ message.author.username }}</a></strong>
+      {{ message.text }}
+      <small>&mdash; {{ message.pub_date|datetimeformat }}</small>
+  {% else %}
+    <li><em>There's no message so far.</em>
+  {% endfor %}
+  </ul>
+{% endblock %}
