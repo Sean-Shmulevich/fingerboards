@@ -9,11 +9,7 @@ from werkzeug.utils import secure_filename
 
 from models import db, User, Item, Order, Img
 
-TODOS = {
-	"todo1": {"task": "build an API", "done": True},
-	"todo2": {"task": "?????", "done": False},
-	"todo3": {"task": "profit!", "done": False},
-}
+cartList = []
 
 # create our little application :)
 app = Flask(__name__)
@@ -55,7 +51,51 @@ def get_user_id(username):
 def get_item_id(name):
 	"""Convenience method to look up the id for a username."""
 	rv = Item.query.filter_by(item_name=name).first()
-	return rv.message_id if rv else None
+	return rv.item_price if rv else None
+
+@app.route('/<item>/addToCart',methods=["POST"])
+def addToCart(item):
+    print(request.get_json())
+    updateCartSess(item_id=item)
+    #after the first press theres nothing in this
+    if(session.get("cart_items").get(f"item{item}") != None):
+        return session.get("cart_items").get(f"item{item}")
+    else:
+        itemT = Item.query.filter_by(item_id=item).first()
+        x = {f"item{item}": {"name": f"{itemT.item_name}", "price": f"{itemT.item_price}"}}
+        return x
+
+def get_price(ran):
+    if(ran != None):
+        cartDict = ran
+        print(cartDict)
+        toSum = 0
+        for key in cartDict:
+            i = float(cartDict[f"{key}"]["price"])
+            if(cartDict[f"{key}"].get("quantity") != None):
+                j = int(cartDict[f"{key}"]["quantity"])
+                for k in range(j):
+                    toSum += i
+            else:
+                toSum += i
+        return toSum
+    else:
+        return 0.00
+
+def get_num_items(ran):
+    if(ran != None):
+        cartDict = ran
+        toSum = 0
+        for key in cartDict:
+            if(cartDict[f"{key}"].get("quantity") != None):
+                j = int(cartDict[f"{key}"]["quantity"])
+                for k in range(j):
+                    toSum += 1
+            else:
+                toSum += 1
+        return toSum
+    else:
+        return 0
 
 @app.before_request
 def before_request():
@@ -68,38 +108,50 @@ def before_request():
 def homepage():
     return render_template('upload.html')
 
-@app.route("/cart")
+@app.route("/cart", methods=["GET","POST"])
 def cart():
-    return render_template('cart.html',items=TODOS)
+   jason = request.get_json()
+   if(request.method == "POST"):
+      print((jason))
+      return jason
+   else:
+      jason = session.get("cart_items")
+      cartList = []
+      for key in jason:
+         keyNum = int(key.replace("item",""))
+         cartList.append(Item.query.filter_by(item_id=keyNum).first())
+      return render_template('cart.html',items=cartList)
 
-@app.route('/fetchItem/<item_id>',methods=["GET"])
-def fetchItem(item_id=None):
+def updateCartSess(item_id=None):
     item = Item.query.filter_by(item_id=item_id).first()
-    x = {
-        f"item{item_id}": {"name": f"{item.item_name}", "price": f"{item.item_price}"}
-    }
-    return x
+    x = {f"item{item_id}": {"name": f"{item.item_name}", "price": f"{item.item_price}"}}
+    if(session.get("cart_items") == None):
+        session["cart_items"] = x
+        return x, 200
+    else:
+        dictx = session.get("cart_items");
+        if(dictx.get(f"item{item_id}") != None):
+            print(dictx)
+            if dictx[f"item{item_id}"].get("quantity") == None:
+                dictx[f"item{item_id}"] = {"name": f"{item.item_name}", "price": f"{item.item_price}", "quantity":f"{2}"}
+                session['cart_items'] = dictx
+                return x,200
+            else:
+                newQuan = int(dictx[f"item{item_id}"]["quantity"])
+                print(newQuan)
+                dictx[f"item{item_id}"] = {"name": f"{item.item_name}", "price": f"{item.item_price}", "quantity":f"{newQuan+1}"}
+                session['cart_items'] = dictx
+                return x,200
+        else:
+            dictx[f"item{item_id}"] = {"name": f"{item.item_name}", "price": f"{item.item_price}"}
+            session['cart_items'] = dictx
+            return x,200
+    return x,200
 
-@app.route('/shop/<item>/addToCart',methods=["POST"])#this url should go to item own link
-def addToCart(item):
-    #add protections here
-    '''
-        req_data = request.get_json()
-        print(req_data)
-
-        id = int(max(TODOS.keys()).lstrip("todo")) + 1
-        id = f"todo{id}"
-
-        TODOS[id] = {"task": req_data["task"], "done": False}
-
-        return {id: TODOS[id]}, 201
-    '''
-    a = Item.query.filter_by(item_id=item).first()
-    user = User.query.filter_by(user_id=session['user_id']).first()
-    user.cartItems.append(a)
-    #add to current user json
-    print(user.cartItems)
-    return redirect(url_for('shop'))
+@app.route('/fetchItem/<item_id>')
+def getItemFast(item_id=None):
+    #updateCartSess(item_id)
+    return session.get("cart_items").get(f"item{item_id}")
 
 @app.route('/shop/<item>')
 def getItem(item):
@@ -107,33 +159,10 @@ def getItem(item):
 
 @app.route('/shop')
 def shop():
-    #image = Img.query.first()
-    #a = Item('a',"b","c")
-    #db.session.add(a)
-    #a.pictures.append(image)
-    #db.session.commit()
     return render_template('shop.html',items=Item.query)
 
 @app.route('/upload', methods=['POST'])
 def upload_img():
-    #more input filtering on the size and type of inputs
-    #pic = request.files['pic']
-
-    #if not pic:
-    #    return render_template('upload.html',error="wrong")
-
-    #filename = secure_filename(pic.filename)
-    #mimetype = pic.mimetype
-    #if not filename or not mimetype:
-    #    return render_template('upload.html',error="wrong")
-
-    #if Img.query.filter_by(name=filename).first() is not None:
-    #    return render_template('upload.html',error="same image has been uploaded before")
-
-    #img = Img(img=pic.read(), name=filename, mimetype=mimetype)
-    #db.session.add(img)
-    #db.session.commit()
-
     newItem = Item(request.form["name"],request.form["price"],request.form["description"])
     #newItem.pictures.append(img)
     db.session.add(newItem)
@@ -194,3 +223,7 @@ def logout():
 	flash('You were logged out')
 	session.pop('user_id', None)
 	return redirect(url_for('login'))
+
+
+app.jinja_env.filters['getPrice'] = get_price
+app.jinja_env.filters['getNumItems'] = get_num_items

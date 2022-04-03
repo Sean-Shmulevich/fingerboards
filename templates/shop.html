@@ -1,13 +1,62 @@
 {% extends "layout.html" %}
 {% block title %}Shop{% endblock %}
 {% block body %}
-  <h2>Shop</h2>
-  {% if error %}<div class="error"><strong>Error:</strong> {{ error }}</div>{% endif %}
-  {% for item in items %}
-    <a href="{{ url_for('getItem',item=item.item_id) }}">
-      {{ item.item_id }}
-      {{ item.item_name }}
-      {{ item.item_price }}
-      </a>
-  {% endfor %}
-{% endblock %}
+<div class="product-list-container">
+        <div class="product-list rows mobile-small grid-fixed-width">
+
+
+
+
+
+            {% for item in items %}
+
+            <a class="prod-thumb product-image-small under_image left-align cover show-quickview" href="{{url_for('getItem',item=item.item_id)}}" title="View Custom BOTTOM Ply Selection">
+              <div class="prod-thumb-container">
+                <div class="product-list-image-container product-list-image-container-cover">
+                  <img alt="" class="blur-up product-list-image grid-cover lazyautosizes lazyloaded" src="https://assets.bigcartel.com/product_images/3529891f-89be-4e75-b25d-100e9efcd60e/custom-bottom-ply-selection.jpg?auto=format&amp;fit=max&amp;w=20" data-aspectratio="1.0147058823529411" data-srcset="
+                      https://assets.bigcartel.com/product_images/3529891f-89be-4e75-b25d-100e9efcd60e/custom-bottom-ply-selection.jpg?auto=format&amp;fit=max&amp;w=200 200w,
+                      https://assets.bigcartel.com/product_images/3529891f-89be-4e75-b25d-100e9efcd60e/custom-bottom-ply-selection.jpg?auto=format&amp;fit=max&amp;w=280 280w,
+                      https://assets.bigcartel.com/product_images/3529891f-89be-4e75-b25d-100e9efcd60e/custom-bottom-ply-selection.jpg?auto=format&amp;fit=max&amp;w=350 350w,
+                      https://assets.bigcartel.com/product_images/3529891f-89be-4e75-b25d-100e9efcd60e/custom-bottom-ply-selection.jpg?auto=format&amp;fit=max&amp;w=400 400w,
+                      https://assets.bigcartel.com/product_images/3529891f-89be-4e75-b25d-100e9efcd60e/custom-bottom-ply-selection.jpg?auto=format&amp;fit=max&amp;w=500 500w,
+                      https://assets.bigcartel.com/product_images/3529891f-89be-4e75-b25d-100e9efcd60e/custom-bottom-ply-selection.jpg?auto=format&amp;fit=max&amp;w=650 650w,
+                      https://assets.bigcartel.com/product_images/3529891f-89be-4e75-b25d-100e9efcd60e/custom-bottom-ply-selection.jpg?auto=format&amp;fit=max&amp;w=800 800w,
+                      https://assets.bigcartel.com/product_images/3529891f-89be-4e75-b25d-100e9efcd60e/custom-bottom-ply-selection.jpg?auto=format&amp;fit=max&amp;w=1000 1000w,
+                      https://assets.bigcartel.com/product_images/3529891f-89be-4e75-b25d-100e9efcd60e/custom-bottom-ply-selection.jpg?auto=format&amp;fit=max&amp;w=1200 1200w,
+                      https://assets.bigcartel.com/product_images/3529891f-89be-4e75-b25d-100e9efcd60e/custom-bottom-ply-selection.jpg?auto=format&amp;fit=max&amp;w=1300 1300w
+                    " data-sizes="auto" sizes="237.44117647058823px" srcset="
+                      https://assets.bigcartel.com/product_images/3529891f-89be-4e75-b25d-100e9efcd60e/custom-bottom-ply-selection.jpg?auto=format&amp;fit=max&amp;w=200 200w,
+                      https://assets.bigcartel.com/product_images/3529891f-89be-4e75-b25d-100e9efcd60e/custom-bottom-ply-selection.jpg?auto=format&amp;fit=max&amp;w=280 280w,
+                      https://assets.bigcartel.com/product_images/3529891f-89be-4e75-b25d-100e9efcd60e/custom-bottom-ply-selection.jpg?auto=format&amp;fit=max&amp;w=350 350w,
+                      https://assets.bigcartel.com/product_images/3529891f-89be-4e75-b25d-100e9efcd60e/custom-bottom-ply-selection.jpg?auto=format&amp;fit=max&amp;w=400 400w,
+                      https://assets.bigcartel.com/product_images/3529891f-89be-4e75-b25d-100e9efcd60e/custom-bottom-ply-selection.jpg?auto=format&amp;fit=max&amp;w=500 500w,
+                      https://assets.bigcartel.com/product_images/3529891f-89be-4e75-b25d-100e9efcd60e/custom-bottom-ply-selection.jpg?auto=format&amp;fit=max&amp;w=650 650w,
+                      https://assets.bigcartel.com/product_images/3529891f-89be-4e75-b25d-100e9efcd60e/custom-bottom-ply-selection.jpg?auto=format&amp;fit=max&amp;w=800 800w,
+                      https://assets.bigcartel.com/product_images/3529891f-89be-4e75-b25d-100e9efcd60e/custom-bottom-ply-selection.jpg?auto=format&amp;fit=max&amp;w=1000 1000w,
+                      https://assets.bigcartel.com/product_images/3529891f-89be-4e75-b25d-100e9efcd60e/custom-bottom-ply-selection.jpg?auto=format&amp;fit=max&amp;w=1200 1200w,
+                      https://assets.bigcartel.com/product_images/3529891f-89be-4e75-b25d-100e9efcd60e/custom-bottom-ply-selection.jpg?auto=format&amp;fit=max&amp;w=1300 1300w
+                    ">
+
+                </div>
+              </div>
+              <div class="prod-thumb-info">
+                <div class="prod-thumb-background"></div>
+                <div class="prod-thumb-info-headers">
+                  <div class="prod-thumb-name">{{item.item_name}}</div>
+                  <div class="prod-thumb-price">
+
+                      <span class="currency_sign">$</span>{{item.item_price}}
+
+                  </div>
+
+
+                </div>
+              </div>
+            </a>
+
+            {% endfor %}
+
+
+        </div>
+      </div>
+      {% endblock %}

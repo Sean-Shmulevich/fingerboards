@@ -1,48 +1,36 @@
 
 
 
-function makePost()
+async function makePost()
 {
   console.log("Sending Post request");
   //const one = document.getElementById(/*item ID*/).value
-
-  fetch(`${location.pathname}/addToCart`, {
+  itemId = (location.pathname.split('/shop/'))[1];
+  a = await fetch(`/${itemId}/addToCart`, {
     method: "post",
     headers: { "Content-type": "application/json" },
-    body: JSON.stringify({"todo": `${1}`}),
-  })
-  .then(res => res.json())
-  .then(
-    (res) => {
-      console.log(`Response: ${res}`);
-    },
-    (error) => {
-      console.log(`Error sending item: ${error}`);
-    }
-  );
+    body: JSON.stringify({"id": `${itemId}`}),
+  });
+
 }
 
 async function makeLocal()
 {
     //cartLink = document.getElementById(/*the link button for the cart*/)
     //when the button is pressed add the item to localstorage and update properties of the CartLink
-
+    console.log("bro");
     itemId = (location.pathname.split('/shop/'))[1].replaceAll(",","");
-    await fetch(`/fetchItem/${itemId}`)
-         .then((response) => {
-			return response.json();
-		})
-        .then((result) => {
-            update(result,itemId)
-        })
-		.catch((error) => {
-            console.error('Error:', error);
-		});
-    stored = sessionStorage.getItem('userCart')
-    if (stored === '')
-    {
-        console.log("nothing added yet");
-    }
+    a = await fetch(`/fetchItem/${itemId}`)
+    .then(res => res.json())
+    .then(
+      (res) => {
+        update(res,itemId);
+        console.log(`Response: ${res}`);
+      },
+      (error) => {
+        console.log(`Error sending item: ${error}`);
+      }
+    );
     //will they stay updated idk tbh
     //when items are ordered and the order comes through then you need the item id and stuff
     //what about when the cart page is loaded just get item detail from local storage maybe i could get it from the db too
@@ -52,43 +40,41 @@ async function makeLocal()
     //need to post a list of items to the database so that order is appended.
     //more specificcally when the order is placed items are appended to order and order is appended to user but it doesnt have to.
 }
+
+
 function update(result,itemId)
 {
-    cart = sessionStorage.getItem('userCart');
-    let cartJson;
-    if(cart)
-    {
-        cartJson = JSON.parse(cart);
-        //if item already exists then update quantity
-        if(cartJson.hasOwnProperty(`item${itemId}`))
-        {
-            amt = cartJson[`item${itemId}`].quantity;
-            if(amt)
-            {
-                amt = amt+1;
-            }
-            else
-            {
-                amt = 2;
-            }
-            cartJson[`item${itemId}`].quantity = amt;
-            sessionStorage.setItem('userCart',JSON.stringify(cartJson));
-        }
-        else//item does not exist yet create item and set to input from fetch
-        {
-            cartJson[`item${itemId}`] = result[`item${itemId}`];
-            sessionStorage.setItem('userCart',JSON.stringify(cartJson));
-        }
-    }
-    else//user cart does not exist yet
-    {
-        sessionStorage.setItem('userCart',JSON.stringify(result));
-    }
+    layoutPrice = document.querySelector("#layout-cart-total");
+    layoutCount = document.querySelector("#layout-cart-count");
+    console.log(layoutPrice);
+}
+
+function makeCart()
+{
+  window.addEventListener("load", updateCart);
+
+  //document.createElement
+}
+
+function sendJson()
+{
+  console.log("Sending POST request");
+  if(typeof sessionStorage.userCart === 'undefined')
+  {
+    return;
+  }
+
+fetch(`/cart`, {
+    method: "post",
+    headers: { "Content-type": "application/json" },
+    body: sessionStorage.userCart
+  })
 }
 
 function setup() {
-	document.getElementById("addCart").addEventListener("click", makeLocal);
-    //timeoutID = window.setTimeout(poller, timeout);
+
+  document.querySelector("#addCart").addEventListener("click", makePost);
+  //timeoutID = window.setTimeout(sendJson, 1000);
 }
 window.addEventListener("load", setup);
 //what does the flow look like here basically a user adds items to their cart
