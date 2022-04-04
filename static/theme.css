@@ -2466,8 +2466,8 @@ ul.sort-by-nav-links {
 }
 
 .add-to-cart-button {
-  -ms-flex-preferred-size: calc(100% - 72px);
-  flex-basis: calc(100% - 72px);
+  -ms-flex-preferred-size: calc(100%);
+  flex-basis: calc(100%);
   display: -ms-flexbox;
   display: flex;
   -ms-flex-direction: column;
@@ -4047,4 +4047,3 @@ p.maintenance-caption {
 .no-gutters .qs-product-details .description-inventory-tabs {
   border-top: 2px solid #000000;
 }
-

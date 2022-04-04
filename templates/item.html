@@ -43,7 +43,6 @@
   </div>
   <div class="product-details product-active">
 
-      <form class="product-form show-sold-out" accept-charset="utf8">
         <input type="hidden">
 
         <div class="product-form-controls">
@@ -53,14 +52,11 @@
                           <input autocomplete="off" type="number" class="product-quantity" id="quantity" min="1" value="1">
             </label>
 
-            <form method="post">
-            <button class="button add-to-cart-button" type="submit" title="Add to Cart" onclick="makePost()">
+
+            <form action="{{url_for('updateCartSess',item_id=item.item_id)}}" method="post">
+            <button class="button add-to-cart-button" type="submit" title="Add to Cart">
               <span class="button-add-price visible"><span class="currency_sign">$</span>{{item.item_price}}</span>
               <span class="button-add-text">Add to Cart</span>
-              <span class="button-add-icon">
-                <svg class="plus-icon" aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path d="M9 0v7h7v2H9v7H7V8.999L0 9V7l7-.001V0z" fill-rule="evenodd"></path></svg>
-                <svg class="check-icon" aria-hidden="true" width="21" height="16" viewBox="0 0 21 16" xmlns="http://www.w3.org/2000/svg"><path d="M1.39130435 8.34782609l4.86956522 4.86956521L19.4782609 0l1.3913043 1.39130435L6.26086957 16 0 9.73913043z" fill-rule="evenodd"></path></svg>
-              </span>
             </button>
             </form>
 
@@ -77,7 +73,6 @@
             </div>
 
         </div>
-      </form>
 
 
 

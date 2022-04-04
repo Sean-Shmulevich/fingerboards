@@ -53,7 +53,13 @@ def get_item_id(name):
 	rv = Item.query.filter_by(item_name=name).first()
 	return rv.item_price if rv else None
 
-@app.route('/<item>/addToCart',methods=["POST"])
+def multiplyQuantity(item):
+    itemT = Item.query.filter_by(item_id=item).first()
+    if(session.get("cart_items").get(f"item{item}").get("quantity") == None):
+        return itemT.item_price
+    a = float(session.get("cart_items").get(f"item{item}").get("quantity"))
+    return a * float(itemT.item_price)
+
 def addToCart(item):
     print(request.get_json())
     updateCartSess(item_id=item)
@@ -68,7 +74,6 @@ def addToCart(item):
 def get_price(ran):
     if(ran != None):
         cartDict = ran
-        print(cartDict)
         toSum = 0
         for key in cartDict:
             i = float(cartDict[f"{key}"]["price"])
@@ -122,38 +127,36 @@ def cart():
          cartList.append(Item.query.filter_by(item_id=keyNum).first())
       return render_template('cart.html',items=cartList)
 
+@app.route('/shop/<item_id>',methods=["POST"])
 def updateCartSess(item_id=None):
     item = Item.query.filter_by(item_id=item_id).first()
+    #okay so the problem is that after the refresh the price cart is not updated
+    #the quantity is not updating after refresh first button press
+    #after refresh session will not update itll stay the same why the fuck
     x = {f"item{item_id}": {"name": f"{item.item_name}", "price": f"{item.item_price}"}}
     if(session.get("cart_items") == None):
         session["cart_items"] = x
-        return x, 200
     else:
         dictx = session.get("cart_items");
         if(dictx.get(f"item{item_id}") != None):
-            print(dictx)
             if dictx[f"item{item_id}"].get("quantity") == None:
                 dictx[f"item{item_id}"] = {"name": f"{item.item_name}", "price": f"{item.item_price}", "quantity":f"{2}"}
                 session['cart_items'] = dictx
-                return x,200
             else:
                 newQuan = int(dictx[f"item{item_id}"]["quantity"])
-                print(newQuan)
                 dictx[f"item{item_id}"] = {"name": f"{item.item_name}", "price": f"{item.item_price}", "quantity":f"{newQuan+1}"}
                 session['cart_items'] = dictx
-                return x,200
         else:
             dictx[f"item{item_id}"] = {"name": f"{item.item_name}", "price": f"{item.item_price}"}
             session['cart_items'] = dictx
-            return x,200
-    return x,200
+    return redirect(url_for("getItem", item=item_id))
 
 @app.route('/fetchItem/<item_id>')
 def getItemFast(item_id=None):
     #updateCartSess(item_id)
     return session.get("cart_items").get(f"item{item_id}")
 
-@app.route('/shop/<item>')
+@app.route('/shop/<item>',methods=["GET"])
 def getItem(item):
     return render_template('item.html',item=Item.query.filter_by(item_id=item).first())
 
@@ -227,3 +230,4 @@ def logout():
 
 app.jinja_env.filters['getPrice'] = get_price
 app.jinja_env.filters['getNumItems'] = get_num_items
+app.jinja_env.filters['getMult'] = multiplyQuantity
