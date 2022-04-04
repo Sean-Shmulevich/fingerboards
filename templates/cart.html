@@ -13,20 +13,20 @@
 
 <div class="cart-container">
 
-    <form class="cart-form">
+    <form class="cart-form" action="{{url_for('cart')}}" method="post">
       <ul class="cart-items" id="addCartList">
 
           {% for item in items %}
 
         <li class="cart-item" data-item-id="319529205">
-          <button title="Remove item: Goo stickers and sticker packs" class="cart-item-remove button min-btn" aria-label="Remove item: Goo stickers and sticker packs" type="button">
+          <button title="Remove item: Goo stickers and sticker packs" class="cart-item-remove button min-btn" aria-label="Remove item: Goo stickers and sticker packs" type="submit" name="del" value={{item.item_id}}>
             <svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 0c6.6290323 0 12 5.37096774 12 12 0 6.6290323-5.3709677 12-12 12-6.62903226 0-12-5.3709677-12-12C0 5.37096774 5.37096774 0 12 0zm0 1.5483871C6.1983682 1.5483871 1.5483871 6.25644216 1.5483871 12c0 5.8016318 4.70805506 10.4516129 10.4516129 10.4516129 5.8016318 0 10.4516129-4.7080551 10.4516129-10.4516129 0-5.8016318-4.7080551-10.4516129-10.4516129-10.4516129zM15.5 7.5l1 1-3.5001 3.5L16.5 15.5l-1 1-3.5-3.5001L8.5 16.5l-1-1 3.5001-3.5L7.5 8.5l1-1 3.5 3.5001L15.5 7.5z" fill-rule="evenodd"></path></svg>
           </button>
-          <a class="cart-item-image" href="/product/large-goo-stickers">
+          <a class="cart-item-image" href="{{url_for('getItem',item=item.item_id)}}">
             <img src="https://assets.bigcartel.com/product_images/7396aa72-495e-45e7-a64c-1dc4503437cf/large-goo-stickers.jpg?auto=format&amp;fit=max&amp;h=240&amp;w=240" alt="View Goo stickers and sticker packs">
           </a>
           <div class="cart-item-name-info">
-            <a class="cart-item-details" href="/product/large-goo-stickers" title="View Goo stickers and sticker packs">
+            <a class="cart-item-details" href="{{url_for('getItem',item=item.item_id)}}" title="View Goo stickers and sticker packs">
               <div class="cart-item-details-name">{{item.item_name}}</div>
 
                 <div class="cart-item-details-option">{{item.item_name}}</div>
@@ -37,31 +37,32 @@
               <div class="cart-item-details-unit-price"><span class="currency_sign">$</span>{{item.item_price}}</div>
 
               <div class="cart-item-quantity-holder" data-item-id="319529205">
-                <button title="Decrease quantity" class="decrease-qty-button qty-button button min-btn" data-func="minus" type="button"><svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 0c6.6290323 0 12 5.37096774 12 12 0 6.6290323-5.3709677 12-12 12-6.62903226 0-12-5.3709677-12-12C0 5.37096774 5.37096774 0 12 0zm0 1.5483871C6.1983682 1.5483871 1.5483871 6.25644216 1.5483871 12c0 5.8016318 4.70805506 10.4516129 10.4516129 10.4516129 5.8016318 0 10.4516129-4.7080551 10.4516129-10.4516129 0-5.8016318-4.7080551-10.4516129-10.4516129-10.4516129zM18 11.25v1.5H6v-1.5h12z" fill-rule="evenodd"></path></svg></button>
+                <button title="Decrease quantity" name="dec" value="{{item.item_id}}" class="decrease-qty-button qty-button button min-btn" type="submit"><svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 0c6.6290323 0 12 5.37096774 12 12 0 6.6290323-5.3709677 12-12 12-6.62903226 0-12-5.3709677-12-12C0 5.37096774 5.37096774 0 12 0zm0 1.5483871C6.1983682 1.5483871 1.5483871 6.25644216 1.5483871 12c0 5.8016318 4.70805506 10.4516129 10.4516129 10.4516129 5.8016318 0 10.4516129-4.7080551 10.4516129-10.4516129 0-5.8016318-4.7080551-10.4516129-10.4516129-10.4516129zM18 11.25v1.5H6v-1.5h12z" fill-rule="evenodd"></path></svg></button>
 
                 <label class="visually-hidden" for="item_319529205_qty">Quantity</label>
                 {% if session.get("cart_items")["item{}".format(item.item_id)]["quantity"] %}
-                    <input type="text" name="cart[update][319529205]" id="item_319529205_qty" value="{{session.get("cart_items")["item{}".format(item.item_id)]["quantity"]}}" class="option-quantity" autocomplete="off">
+                    <input type="text" name="cart{{item.item_id}}" id="item_319529205_qty" value="{{session.get("cart_items")["item{}".format(item.item_id)]["quantity"]}}" class="option-quantity" autocomplete="off" readonly>
                 {% else %}
-                    <input type="text" name="cart[update][319529205]" id="item_319529205_qty" value="1" class="option-quantity" autocomplete="off">
+                    <input type="text" name="cart{{item.item_id}}" id="item_319529205_qty" value="1" class="option-quantity" autocomplete="off" readonly>
                 {% endif %}
 
-                <button title="Increase quantity" class="increase-qty-button qty-button button min-btn" data-func="plus" type="button"><svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 0c6.6290323 0 12 5.37096774 12 12 0 6.6290323-5.3709677 12-12 12-6.62903226 0-12-5.3709677-12-12C0 5.37096774 5.37096774 0 12 0zm0 1.5483871C6.1983682 1.5483871 1.5483871 6.25644216 1.5483871 12c0 5.8016318 4.70805506 10.4516129 10.4516129 10.4516129 5.8016318 0 10.4516129-4.7080551 10.4516129-10.4516129 0-5.8016318-4.7080551-10.4516129-10.4516129-10.4516129zM12.75 6v5.25H18v1.5h-5.25V18h-1.5v-5.25075L6 12.75v-1.5l5.25-.00075V6h1.5z" fill-rule="evenodd"></path></svg></button>
+                <button title="Increase quantity" name="inc"  value="{{item.item_id}}" class="increase-qty-button qty-button button min-btn" type="submit"><svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 0c6.6290323 0 12 5.37096774 12 12 0 6.6290323-5.3709677 12-12 12-6.62903226 0-12-5.3709677-12-12C0 5.37096774 5.37096774 0 12 0zm0 1.5483871C6.1983682 1.5483871 1.5483871 6.25644216 1.5483871 12c0 5.8016318 4.70805506 10.4516129 10.4516129 10.4516129 5.8016318 0 10.4516129-4.7080551 10.4516129-10.4516129 0-5.8016318-4.7080551-10.4516129-10.4516129-10.4516129zM12.75 6v5.25H18v1.5h-5.25V18h-1.5v-5.25075L6 12.75v-1.5l5.25-.00075V6h1.5z" fill-rule="evenodd"></path></svg></button>
               </div>
               <div class="cart-item-details-price"><span class="currency_sign">$</span>{{item.item_id|getMult}}</div>
             </div>
           </div>
         </li>
-
+        {% else %}
+            <a href="{{url_for('shop')}}" class="button alert-message-button">Start shopping</a>
         {% endfor %}
 
 
-
       </ul>
+      </form>
 
       <div class="cart-footer">
         <div class="cart-sub-footer">
-          <a class="icon-link icon-left-link continue-shopping-link" href="/products">
+          <a class="icon-link icon-left-link continue-shopping-link" href="{{url_for('shop')}}">
             <svg width="16" height="20" viewBox="0 0 21 20" xmlns="http://www.w3.org/2000/svg"><path d="M9.996638 20L8e-7 10.00336286l.0035344-.00381736L8e-7 9.9966371 9.996638 0l1.87436943 1.8743695L5.2460074 8.5H20.442436v3H5.2460074l6.62500003 6.62563054z" fill-rule="evenodd"></path></svg>
           Continue shopping
           </a>
@@ -69,15 +70,13 @@
             <span class="cart-subtotal-label">Subtotal</span>
             <span class="cart-subtotal-amount"><span class="currency_sign">$</span>{{session.get("cart_items")|getPrice}}</span></div>
         </div>
+        <form action="/create-checkout-session" method="POST">
         <button type="submit" name="checkout" class="button checkout-button has-right-icon">Checkout <svg aria-hidden="true" class="button-icon-right-arrow" width="21" height="20" viewBox="0 0 21 20" xmlns="http://www.w3.org/2000/svg"><path d="M10.445798 0l9.9966372 9.99663714-.0035344.00381736.0035344.0029084L10.445798 20l-1.87436943-1.8743695L15.1964286 11.5H0v-3h15.1964286L8.57142857 1.87436946z" fill-rule="evenodd"></path></svg></button>
+        </form>
       </div>
-    </form>
 
-  <div class="alert-message cart-alert-message">
-    <div class="alert-message-header">Your cart is empty!</div>
-    <div class="alert-message-text">Sounds like a good time to start shopping.</div>
-    <a href="/products" class="button alert-message-button">Start shopping</a>
-  </div>
+
+
 
 </div>
 

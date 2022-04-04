@@ -6,11 +6,14 @@ from datetime import datetime
 from flask import Flask, request, session, url_for, redirect, render_template, abort, g, flash, _app_ctx_stack
 from werkzeug.security import check_password_hash, generate_password_hash
 from werkzeug.utils import secure_filename
+import stripe
 
 from models import db, User, Item, Order, Img
 
 cartList = []
 
+stripe.api_key = "sk_test_51Kkk2UIc2DOJZXPJTJr4i2WPZDqeG70bAi6Y2TA4hMCMXntld7ayUBNRQgck0sLGJtG09a0tXGMVGWUgarkCkX5C00S3vYYVY6"
+YOUR_DOMAIN = 'http://127.0.0.1:5000'
 # create our little application :)
 app = Flask(__name__)
 
@@ -113,19 +116,60 @@ def before_request():
 def homepage():
     return render_template('upload.html')
 
+@app.route('/create-checkout-session', methods=['POST'])
+def create_checkout_session():
+    print("here")
+    try:
+        checkout_session = stripe.checkout.Session.create(
+            line_items=[
+                {
+                    # Provide the exact Price ID (for example, pr_1234) of the product you want to sell
+                    'price': 'price_1KkkI4Ic2DOJZXPJCZqU8Hb6',
+                    'quantity': 1,
+                },
+            ],
+            mode='payment',
+            success_url=YOUR_DOMAIN + '/success.html',
+            cancel_url=YOUR_DOMAIN + '/cancel.html',
+            automatic_tax={'enabled': True},
+        )
+    except Exception as e:
+        return str(e)
+    return redirect(checkout_session.url, code=303)
+
 @app.route("/cart", methods=["GET","POST"])
 def cart():
-   jason = request.get_json()
+   print(session.get("cart_items"))
    if(request.method == "POST"):
-      print((jason))
-      return jason
-   else:
-      jason = session.get("cart_items")
-      cartList = []
-      for key in jason:
-         keyNum = int(key.replace("item",""))
-         cartList.append(Item.query.filter_by(item_id=keyNum).first())
-      return render_template('cart.html',items=cartList)
+       dictx = session.get("cart_items")
+       print(request.form)
+       if dictx:
+           if 'dec' in request.form:
+               updateItem = Item.query.filter_by(item_id=request.form["dec"])
+               quant = int(request.form[f"cart{request.form['dec']}"])
+               #request.form[f"cart{request.form['inc']}"] = quant+1
+               if(quant == 1):
+                   dictx[f"item{request.form['dec']}"]["quantity"] = 1
+               else:
+                   dictx[f"item{request.form['dec']}"]["quantity"] = quant-1
+           elif 'inc' in request.form:
+               print(request.form['inc'])
+               quant = int(request.form[f"cart{request.form['inc']}"])
+               dictx[f"item{request.form['inc']}"]["quantity"] = quant+1
+           elif 'del' in request.form:
+               dictx.pop(f"item{request.form['del']}")
+           elif 'checkout' in request.form:
+               create_checkout_session()
+           session["cart_items"] = dictx
+
+   jason = session.get("cart_items")
+   cartList = []
+   if(not jason):
+       return render_template('cart.html')
+   for key in jason:
+      keyNum = int(key.replace("item",""))
+      cartList.append(Item.query.filter_by(item_id=keyNum).first())
+   return render_template('cart.html',items=cartList)
 
 @app.route('/shop/<item_id>',methods=["POST"])
 def updateCartSess(item_id=None):
@@ -133,21 +177,17 @@ def updateCartSess(item_id=None):
     #okay so the problem is that after the refresh the price cart is not updated
     #the quantity is not updating after refresh first button press
     #after refresh session will not update itll stay the same why the fuck
-    x = {f"item{item_id}": {"name": f"{item.item_name}", "price": f"{item.item_price}"}}
+    x = {f"item{item_id}": {"name": f"{item.item_name}", "price": f"{item.item_price}","quantity": "1"}}
     if(session.get("cart_items") == None):
         session["cart_items"] = x
     else:
         dictx = session.get("cart_items");
         if(dictx.get(f"item{item_id}") != None):
-            if dictx[f"item{item_id}"].get("quantity") == None:
-                dictx[f"item{item_id}"] = {"name": f"{item.item_name}", "price": f"{item.item_price}", "quantity":f"{2}"}
-                session['cart_items'] = dictx
-            else:
-                newQuan = int(dictx[f"item{item_id}"]["quantity"])
-                dictx[f"item{item_id}"] = {"name": f"{item.item_name}", "price": f"{item.item_price}", "quantity":f"{newQuan+1}"}
-                session['cart_items'] = dictx
+            newQuan = int(dictx[f"item{item_id}"]["quantity"])
+            dictx[f"item{item_id}"] = {"name": f"{item.item_name}", "price": f"{item.item_price}", "quantity":f"{newQuan+1}"}
+            session['cart_items'] = dictx
         else:
-            dictx[f"item{item_id}"] = {"name": f"{item.item_name}", "price": f"{item.item_price}"}
+            dictx[f"item{item_id}"] = {"name": f"{item.item_name}", "price": f"{item.item_price}","quantity": "1"}
             session['cart_items'] = dictx
     return redirect(url_for("getItem", item=item_id))
 
